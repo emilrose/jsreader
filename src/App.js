@@ -1,8 +1,8 @@
-import "./App.css";
-import { useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import styled from "styled-components";
-
 import "styled-components/macro";
+
+import TEXT from "./text";
 
 /* 
 TODO:
@@ -10,9 +10,6 @@ TODO:
 - options for dict url
 - view saved words and definitions
 */
-
-const TEXT =
-  "If you've previously installed create-react-app globally via npm install -g create-react-app, we recommend you uninstall the package using npm uninstall -g create-react-app or yarn global remove create-react-app to ensure that npx always uses the latest version.";
 
 const PAGES = {
   library: "Library",
@@ -23,15 +20,53 @@ function dictUrl(query) {
   return `https://dsal.uchicago.edu/cgi-bin/app/hayyim_query.py?qs=${query}&matchtype=exact&searchhws=yes`;
 }
 
+function steingass(query) {
+  return `https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?qs=${query}&matchtype=exact&searchhws=yes`;
+}
+
+function forvoUrl(selectedWord) {
+  return `https://forvo.com/search/${selectedWord}/fa/`;
+}
+
 const StyledButton = styled.div`
   :hover {
     cursor: pointer;
-    background: ${({ backgroundColor }) => backgroundColor || "lightgrey"};
+    background-color: slategrey;
   }
 `;
 
 function Button(props) {
   return <StyledButton role="button" {...props} />;
+}
+
+function ActionButton(props) {
+  const { showConfirmation, onClick } = props;
+
+  const [confirm, setConfirm] = useState(false);
+
+  let wrappedOnClick = onClick;
+  if (showConfirmation) {
+    wrappedOnClick = () => {
+      setConfirm(true);
+      setTimeout(() => {
+        setConfirm(false);
+      }, 2000);
+    };
+  }
+  return (
+    <Button
+      css={`
+        background-color: lightgrey;
+        margin: 0 0.5em;
+        border: 1px solid black;
+        border-radius: 0.5em;
+        padding: 0 5px;
+        ${confirm && "background-color: lightgreen;"}
+      `}
+      {...props}
+      onClick={wrappedOnClick}
+    />
+  );
 }
 
 function App() {
@@ -41,7 +76,8 @@ function App() {
     setCurrentPage(page);
   }
 
-  const [showPane, setShowPane] = useState(false);
+  // Just default to always showing
+  const [showPane, setShowPane] = useState(true);
 
   function toggleSidePane() {
     setShowPane((showPane) => !showPane);
@@ -49,7 +85,7 @@ function App() {
 
   const [savedWords, setSavedWords] = useState([]);
 
-  function saveViewedWord(newWord) {
+  function saveWord(newWord) {
     setSavedWords((words) => [...words, newWord]);
   }
 
@@ -66,10 +102,24 @@ function App() {
         currentPage={currentPage}
       />
       {currentPage === PAGES.library && (
-        <Reader showPane={showPane} saveViewedWord={saveViewedWord} />
+        <Reader showPane={showPane} saveWord={saveWord} />
       )}
-      {currentPage === PAGES.words && <SavedWords savedWords={savedWords} />}
+      {currentPage === PAGES.words && <SavedWords savedWords={savedWords} />}{" "}
     </div>
+  );
+}
+
+function NavButton({ currentPage, page, selectPage }) {
+  return (
+    <Button
+      css={`
+        color: white;
+        ${currentPage === page && "text-decoration: underline"}
+      `}
+      onClick={() => selectPage(page)}
+    >
+      {page}
+    </Button>
   );
 }
 
@@ -78,28 +128,42 @@ function TopBar({ toggleSidePane, selectPage, currentPage }) {
     <div
       css={`
         display: flex;
-        justify-content: flex-end;
-        background: darkgrey;
+        justify-content: space-between;
+        background: dimgrey;
         padding: 10px;
         margin-bottom: 10px;
       `}
     >
-      <Button onClick={() => selectPage(PAGES.library)}>{PAGES.library}</Button>
-      <Button onClick={() => selectPage(PAGES.words)}>{PAGES.words}</Button>
-      {currentPage === PAGES.library && (
-        <Button onClick={toggleSidePane}>X</Button>
-      )}
+      <div
+        css={`
+          display: flex;
+          gap: 10px;
+        `}
+      >
+        <NavButton
+          page={PAGES.library}
+          currentPage={currentPage}
+          selectPage={selectPage}
+        />
+        <NavButton
+          page={PAGES.words}
+          currentPage={currentPage}
+          selectPage={selectPage}
+        />
+      </div>
+      {/* {currentPage === PAGES.library && (
+        <Button onClick={toggleSidePane}>Toggle side pane</Button>
+      )} */}
     </div>
   );
 }
 
-function Reader({ showPane, saveViewedWord }) {
-  const words = TEXT.split(" ");
+function Reader({ showPane, saveWord }) {
+  const words = useMemo(() => TEXT.split(" "), [TEXT]);
 
   const [selectedWordIndex, setSelectedWordIndex] = useState(-1);
 
   function selectWord(word, i) {
-    saveViewedWord(word);
     setSelectedWordIndex(i);
   }
 
@@ -116,18 +180,26 @@ function Reader({ showPane, saveViewedWord }) {
           flex-wrap: wrap;
         `}
       >
+        <Text textArray={["asd"]} />
         {words.map((word, i) => (
           <Button
             onClick={() => selectWord(word, i)}
             css={`
               margin: 1px 5px;
+              ${selectedWordIndex === i && "background-color: red !important; "}
             `}
+            key={`${word}-${i}`}
           >
             {word}
           </Button>
         ))}
       </div>
-      {showPane && <SelectedWordPane selectedWord={words[selectedWordIndex]} />}
+      {showPane && (
+        <SelectedWordPane
+          selectedWord={words[selectedWordIndex]}
+          saveWord={saveWord}
+        />
+      )}
     </div>
   );
 }
@@ -137,18 +209,25 @@ function SavedWords({ savedWords }) {
     <div
       css={`
         display: flex;
-        flex: 1 0 100%;
+        flex-grow: 1;
       `}
     >
-      <div>Saved words:</div>
+      <div
+        css={`
+          flex-grow: 1;
+        `}
+      >
+        Saved words:
+      </div>
       <div
         css={`
           display: flex;
           flex-direction: column;
+          flex-grow: 1;
         `}
       >
         {savedWords.map((word) => (
-          <div>
+          <div key={word}>
             <b>{word}</b>: definition
           </div>
         ))}
@@ -157,8 +236,37 @@ function SavedWords({ savedWords }) {
   );
 }
 
-function SelectedWordPane({ selectedWord }) {
-  const iframeSrc = dictUrl(selectedWord);
+function Text({ textArray }) {
+  // const refContainer = useRef(null);
+
+  // for (let text of textArray) {
+  //   const element = <span ref={refContainer}>{text}</span>;
+  //   console.log(refContainer.current.clientHeight);
+  // }
+  return <></>;
+}
+
+function SelectedWordPane({ selectedWord = "", saveWord }) {
+  // The selected word in the text might not be the same as the lexical form that we should use for dictionary definitions and saving.
+  // For example, there might be grammatical suffixes on the word.
+  // So we allow the user to edit the selected word.
+  // There are three versions of the word:
+  // - selectedWord: the original word as selected in the text
+  // - editedWord: the word after edits by the user
+  // - temporaryWord: the intermediate version of the word as it's being edited
+  // All three forms are initially the same.
+  const [editedWord, setEditedWord] = useState(selectedWord);
+  const [temporaryWord, setTemporaryWord] = useState(selectedWord);
+
+  const dictIframeSrc = dictUrl(editedWord);
+  const pronounciationIframeSrc = forvoUrl(editedWord);
+  const steingassSrc = steingass(editedWord);
+
+  useEffect(() => {
+    // Reset the local word state to selectedWord whenever a new word is selected.
+    setEditedWord(selectedWord);
+    setTemporaryWord(selectedWord);
+  }, [selectedWord]);
 
   return (
     <div
@@ -166,11 +274,48 @@ function SelectedWordPane({ selectedWord }) {
         flex: 1 1 0;
       `}
     >
-      {!selectedWord && <div>No word selected</div>}
-      {selectedWord && <div>Currently selected word: {selectedWord}</div>}
-      {/* <iframe src={iframeSrc} /> */}
+      {!selectedWord && <div>Click a word to select it</div>}
+      {selectedWord && (
+        <>
+          <div>Currently selected word: {editedWord}</div>{" "}
+          <div>
+            <input
+              type="text"
+              value={temporaryWord}
+              onChange={(e) => setTemporaryWord(e.target.value)}
+            />
+            <ActionButton onClick={() => setEditedWord(temporaryWord)}>
+              Confirm edited word
+            </ActionButton>
+          </div>
+          <div>
+            <ActionButton onClick={() => saveWord(editedWord)} showConfirmation>
+              Save word
+            </ActionButton>
+          </div>
+          <div
+            css={`
+              display: flex;
+              gap: 10px;
+            `}
+          >
+            <ExternalLink href={dictIframeSrc}>Hayyim</ExternalLink>
+            <ExternalLink href={steingassSrc}>Steingass</ExternalLink>
+            <ExternalLink href={pronounciationIframeSrc}>Forvo</ExternalLink>
+          </div>
+          {/* <iframe src={dictIframeSrc} /> */}
+          {/* <iframe src={pronounciationIframeSrc} /> */}
+        </>
+      )}
     </div>
   );
 }
 
+function ExternalLink({ href, children }) {
+  return (
+    <a target="_blank" rel="noreferrer" href={href}>
+      {children}
+    </a>
+  );
+}
 export default App;
