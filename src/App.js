@@ -159,12 +159,15 @@ function TopBar({ toggleSidePane, selectPage, currentPage }) {
 }
 
 function Reader({ showPane, saveWord }) {
-  const words = useMemo(() => TEXT.split(" "), [TEXT]);
+  const paragraphs = useMemo(() => TEXT.split("\n"), [TEXT]);
 
-  const [selectedWordIndex, setSelectedWordIndex] = useState(-1);
+  const [
+    [selectedWord, selectedWordIndex, selectedParagraphIndex],
+    setSelectedWord,
+  ] = useState(["", -1, -1]);
 
-  function selectWord(word, i) {
-    setSelectedWordIndex(i);
+  function selectWord(word, wordIndex, paragraphIndex) {
+    setSelectedWord([word, wordIndex, paragraphIndex]);
   }
 
   return (
@@ -181,25 +184,53 @@ function Reader({ showPane, saveWord }) {
         `}
       >
         <Text textArray={["asd"]} />
-        {words.map((word, i) => (
-          <Button
-            onClick={() => selectWord(word, i)}
-            css={`
-              margin: 1px 5px;
-              ${selectedWordIndex === i && "background-color: red !important; "}
-            `}
-            key={`${word}-${i}`}
-          >
-            {word}
-          </Button>
+        {paragraphs.map((paragraphText, paragraphIndex) => (
+          <Paragraph
+            paragraphText={paragraphText}
+            paragraphIndex={paragraphIndex}
+            selectWord={selectWord}
+            selectedParagraphIndex={selectedParagraphIndex}
+            selectedWordIndex={selectedWordIndex}
+          />
         ))}
       </div>
       {showPane && (
-        <SelectedWordPane
-          selectedWord={words[selectedWordIndex]}
-          saveWord={saveWord}
-        />
+        <SelectedWordPane selectedWord={selectedWord} saveWord={saveWord} />
       )}
+    </div>
+  );
+}
+
+function Paragraph({
+  paragraphText,
+  paragraphIndex,
+  selectWord,
+  selectedWordIndex,
+  selectedParagraphIndex,
+}) {
+  const words = paragraphText.split(" ");
+
+  return (
+    <div
+      css={`
+        direction: rtl;
+        margin-bottom: 0.75em;
+      `}
+    >
+      {words.map((word, i) => (
+        <Button
+          onClick={() => selectWord(word, i, paragraphIndex)}
+          css={`
+            margin: 1px 5px;
+            ${selectedWordIndex === i &&
+            selectedParagraphIndex == paragraphIndex &&
+            "background-color: red !important; "}
+          `}
+          key={`${word}-${i}`}
+        >
+          {word}
+        </Button>
+      ))}
     </div>
   );
 }
