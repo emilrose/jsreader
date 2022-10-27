@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import "styled-components/macro";
 
@@ -159,7 +159,7 @@ function TopBar({ toggleSidePane, selectPage, currentPage }) {
 }
 
 function Reader({ showPane, saveWord }) {
-  const paragraphs = useMemo(() => TEXT.split("\n"), [TEXT]);
+  const paragraphs = useMemo(() => TEXT.split("\n"), []);
 
   const [
     [selectedWord, selectedWordIndex, selectedParagraphIndex],
@@ -223,7 +223,7 @@ function Paragraph({
           css={`
             margin: 1px 5px;
             ${selectedWordIndex === i &&
-            selectedParagraphIndex == paragraphIndex &&
+            selectedParagraphIndex === paragraphIndex &&
             "background-color: red !important; "}
           `}
           key={`${word}-${i}`}
@@ -302,7 +302,8 @@ function SelectedWordPane({ selectedWord = "", saveWord }) {
   return (
     <div
       css={`
-        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
       `}
     >
       {!selectedWord && <div>Click a word to select it</div>}
