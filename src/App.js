@@ -1,4 +1,11 @@
-import { useEffect, useState, useMemo } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import styled from "styled-components";
 import "styled-components/macro";
 
@@ -157,6 +164,22 @@ function TopBar({ toggleSidePane, selectPage, currentPage }) {
     </div>
   );
 }
+function MeasureExample() {
+  const [height, setHeight] = useState(0);
+
+  const measuredRef = useCallback((node) => {
+    if (node !== null) {
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []);
+
+  return (
+    <>
+      <h1 ref={measuredRef}>Hello, world</h1>
+      <h2>The above header is {Math.round(height)}px tall</h2>
+    </>
+  );
+}
 
 function Reader({ showPane, saveWord }) {
   const paragraphs = useMemo(() => TEXT.split("\n"), []);
@@ -170,6 +193,18 @@ function Reader({ showPane, saveWord }) {
     setSelectedWord([word, wordIndex, paragraphIndex]);
   }
 
+  function renderParagraph(paragraph, paragraphIndex) {
+    return (
+      <Paragraph
+        paragraphText={paragraph}
+        paragraphIndex={paragraphIndex}
+        selectWord={selectWord}
+        selectedParagraphIndex={selectedParagraphIndex}
+        selectedWordIndex={selectedWordIndex}
+      />
+    );
+  }
+
   return (
     <div
       css={`
@@ -177,6 +212,7 @@ function Reader({ showPane, saveWord }) {
         gap: 10px;
       `}
     >
+      <MeasureExample />
       <div
         css={`
           flex: 2 1 0;
@@ -184,20 +220,75 @@ function Reader({ showPane, saveWord }) {
         `}
       >
         <Text textArray={["asd"]} />
-        {paragraphs.map((paragraphText, paragraphIndex) => (
-          <Paragraph
-            paragraphText={paragraphText}
-            paragraphIndex={paragraphIndex}
-            selectWord={selectWord}
-            selectedParagraphIndex={selectedParagraphIndex}
-            selectedWordIndex={selectedWordIndex}
-          />
-        ))}
+        <PaginationWrapper items={paragraphs} renderItem={renderParagraph} />
       </div>
       {showPane && (
         <SelectedWordPane selectedWord={selectedWord} saveWord={saveWord} />
       )}
     </div>
+  );
+}
+
+function HeightWrapper({ children, show }) {
+  // const measuredRef = useCallback((node) => {
+  //   if (node !== null) {
+  //     console.log("in cb with node", node);
+  //     debugger;
+  //     const height = node.getBoundingClientRect().height;
+  //     console.log(height);
+  //     setHeight(height);
+  //   }
+  // }, []);
+  // const ref = useRef();
+
+  // useLayoutEffect(() => {}, [ref.current]);
+
+  const [height, setHeight] = useState(0);
+
+  const measuredRef = useCallback((node) => {
+    if (node !== null) {
+      debugger;
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []);
+  console.log(height);
+
+  return (
+    <div
+      css={`
+        // ${!show && "visibility: hidden;"}
+      `}
+      ref={measuredRef}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PaginationWrapper({ items, renderItem }) {
+  const [itemsToShow, setItemsToShow] = useState([]);
+  console.log(itemsToShow);
+  const [show, setShow] = useState(true);
+
+  const [height, setHeight] = useState(0);
+  const maxHeight = "500";
+
+  useEffect(() => {
+    const isTooLarge = height > maxHeight;
+    if (isTooLarge) {
+      if (!show) setShow(true);
+    } else {
+      if (itemsToShow.length === 0) {
+        setItemsToShow(items.slice(0, 5));
+      }
+      // setItemsToShow(items.slice(0, itemsToShow.length + 1));
+    }
+  });
+
+  return (
+    <HeightWrapper setHeight={setHeight} show={show}>
+      {itemsToShow.map((item, index) => renderItem(item, index))}
+    </HeightWrapper>
   );
 }
 
