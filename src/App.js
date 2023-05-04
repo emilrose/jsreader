@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import styled from "styled-components";
 import "styled-components/macro";
 
 import TEXT from "./text";
+import { Button, ActionButton, ExternalLink, Text } from "./components";
 
 /* 
 TODO:
@@ -26,47 +26,6 @@ function steingass(query) {
 
 function forvoUrl(selectedWord) {
   return `https://forvo.com/search/${selectedWord}/fa/`;
-}
-
-const StyledButton = styled.div`
-  :hover {
-    cursor: pointer;
-    background-color: slategrey;
-  }
-`;
-
-function Button(props) {
-  return <StyledButton role="button" {...props} />;
-}
-
-function ActionButton(props) {
-  const { showConfirmation, onClick } = props;
-
-  const [confirm, setConfirm] = useState(false);
-
-  let wrappedOnClick = onClick;
-  if (showConfirmation) {
-    wrappedOnClick = () => {
-      setConfirm(true);
-      setTimeout(() => {
-        setConfirm(false);
-      }, 2000);
-    };
-  }
-  return (
-    <Button
-      css={`
-        background-color: lightgrey;
-        margin: 0 0.5em;
-        border: 1px solid black;
-        border-radius: 0.5em;
-        padding: 0 5px;
-        ${confirm && "background-color: lightgreen;"}
-      `}
-      {...props}
-      onClick={wrappedOnClick}
-    />
-  );
 }
 
 function App() {
@@ -351,16 +310,6 @@ function SavedWords({ savedWords }) {
   );
 }
 
-function Text({ textArray }) {
-  // const refContainer = useRef(null);
-
-  // for (let text of textArray) {
-  //   const element = <span ref={refContainer}>{text}</span>;
-  //   console.log(refContainer.current.clientHeight);
-  // }
-  return <></>;
-}
-
 function SelectedWordPane({ selectedWord = "", saveWord }) {
   // The selected word in the text might not be the same as the lexical form that we should use for dictionary definitions and saving.
   // For example, there might be grammatical suffixes on the word.
@@ -427,11 +376,4 @@ function SelectedWordPane({ selectedWord = "", saveWord }) {
   );
 }
 
-function ExternalLink({ href, children }) {
-  return (
-    <a target="_blank" rel="noreferrer" href={href}>
-      {children}
-    </a>
-  );
-}
 export default App;
