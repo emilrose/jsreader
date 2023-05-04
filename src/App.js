@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useMemo,
-  useRef,
-  useCallback,
-  useLayoutEffect,
-} from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import styled from "styled-components";
 import "styled-components/macro";
 
@@ -111,17 +104,17 @@ function App() {
       {currentPage === PAGES.library && (
         <Reader showPane={showPane} saveWord={saveWord} />
       )}
-      {currentPage === PAGES.words && <SavedWords savedWords={savedWords} />}{" "}
+      {currentPage === PAGES.words && <SavedWords savedWords={savedWords} />}
     </div>
   );
 }
 
-function NavButton({ currentPage, page, selectPage }) {
+function NavButton({ page, selectPage, isSelected }) {
   return (
     <Button
       css={`
         color: white;
-        ${currentPage === page && "text-decoration: underline"}
+        ${isSelected && "text-decoration: underline"}
       `}
       onClick={() => selectPage(page)}
     >
@@ -149,35 +142,19 @@ function TopBar({ toggleSidePane, selectPage, currentPage }) {
       >
         <NavButton
           page={PAGES.library}
-          currentPage={currentPage}
+          isSelected={currentPage === PAGES.library}
           selectPage={selectPage}
         />
         <NavButton
           page={PAGES.words}
-          currentPage={currentPage}
+          isSelected={currentPage === PAGES.words}
           selectPage={selectPage}
         />
       </div>
-      {/* {currentPage === PAGES.library && (
+      {currentPage === PAGES.library && (
         <Button onClick={toggleSidePane}>Toggle side pane</Button>
-      )} */}
+      )}
     </div>
-  );
-}
-function MeasureExample() {
-  const [height, setHeight] = useState(0);
-
-  const measuredRef = useCallback((node) => {
-    if (node !== null) {
-      setHeight(node.getBoundingClientRect().height);
-    }
-  }, []);
-
-  return (
-    <>
-      <h1 ref={measuredRef}>Hello, world</h1>
-      <h2>The above header is {Math.round(height)}px tall</h2>
-    </>
   );
 }
 
@@ -247,7 +224,6 @@ function HeightWrapper({ children, show }) {
 
   const measuredRef = useCallback((node) => {
     if (node !== null) {
-      debugger;
       setHeight(node.getBoundingClientRect().height);
     }
   }, []);
@@ -323,6 +299,23 @@ function Paragraph({
         </Button>
       ))}
     </div>
+  );
+}
+
+function MeasureExample() {
+  const [height, setHeight] = useState(0);
+
+  const measuredRef = useCallback((node) => {
+    if (node !== null) {
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []);
+
+  return (
+    <>
+      <h1 ref={measuredRef}>asd</h1>
+      <h2>The above header is {Math.round(height)}px tall</h2>
+    </>
   );
 }
 
