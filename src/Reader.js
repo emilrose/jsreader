@@ -58,21 +58,21 @@ function PaginationWrapper({ items, renderItem }) {
   const [show, setShow] = useState(false);
 
   const [height, setHeight] = useState(0);
-  console.log(
-    `current height: ${height}, show: ${show}, nts: ${numItemsToShow}`
-  );
-  const maxHeight = "800";
+  const maxHeight = 500;
 
-  useEffect(() => {
-    const isTooLarge = height > maxHeight;
+  useLayoutEffect(() => {
+    // console.log(
+    //   `current height: ${height}, show: ${show}, nts: ${numItemsToShow}`
+    // );
+
+    const isTooLarge = height >= maxHeight;
     if (isTooLarge && !show) {
-      // TODO: remove last one?
-      setNumItemsToShow((n) => n - 1);
       setShow(true);
+      setNumItemsToShow((n) => n - 1);
     } else if (!show) {
       setNumItemsToShow((n) => n + 1);
     }
-  });
+  }, [height, show, numItemsToShow]);
 
   return (
     <HeightWrapper setHeight={setHeight} show={show}>
@@ -93,7 +93,7 @@ function HeightWrapper({ children, show, setHeight }) {
   return (
     <div
       css={`
-        // ${!show && "visibility: hidden;"}
+        ${!show && "visibility: hidden;"}
       `}
       ref={measureRef}
     >
