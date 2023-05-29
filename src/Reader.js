@@ -1,15 +1,8 @@
-import {
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-} from "react";
+import { useEffect, useState, useMemo, useLayoutEffect, useRef } from "react";
 import "styled-components/macro";
 
 import { TEXT } from "./constants";
-import { Button, Text } from "./components";
+import { Button } from "./components";
 import SelectedWordPane from "./SelectedWordPane";
 
 export default function Reader({ showPane, saveWord }) {
@@ -27,7 +20,7 @@ export default function Reader({ showPane, saveWord }) {
   function renderParagraph(paragraph, paragraphIndex) {
     return (
       <Paragraph
-        key={`${paragraph.slice(10)}-${paragraphIndex}`}
+        key={`${paragraph.slice(0, 10)}-${paragraphIndex}`}
         paragraphText={paragraph}
         paragraphIndex={paragraphIndex}
         selectWord={selectWord}
@@ -44,9 +37,6 @@ export default function Reader({ showPane, saveWord }) {
         gap: 10px;
       `}
     >
-      <MeasureExample>
-        <div>asd</div>
-      </MeasureExample>
       <div
         css={`
           flex: 2 1 0;
@@ -62,57 +52,25 @@ export default function Reader({ showPane, saveWord }) {
   );
 }
 
-function HeightWrapper({ children, show }) {
-  // const measuredRef = useCallback((node) => {
-  //   if (node !== null) {
-  //     console.log("in cb with node", node);
-  //     debugger;
-  //     const height = node.getBoundingClientRect().height;
-  //     console.log(height);
-  //     setHeight(height);
-  //   }
-  // }, []);
-  // const ref = useRef();
-
-  // useLayoutEffect(() => {}, [ref.current]);
-
-  const [height, setHeight] = useState(0);
-
-  const measuredRef = useCallback((node) => {
-    if (node !== null) {
-      setHeight(node.getBoundingClientRect().height);
-    }
-  }, []);
-  console.log(height);
-
-  return (
-    <div
-      css={`
-        // ${!show && "visibility: hidden;"}
-      `}
-      ref={measuredRef}
-    >
-      {children}
-    </div>
-  );
-}
-
 function PaginationWrapper({ items, renderItem }) {
-  const [itemsToShow, setItemsToShow] = useState([]);
-  const [show, setShow] = useState(true);
+  const [numItemsToShow, setNumItemsToShow] = useState(0);
+  const itemsToShow = items.slice(0, numItemsToShow);
+  const [show, setShow] = useState(false);
 
   const [height, setHeight] = useState(0);
-  const maxHeight = "500";
+  console.log(
+    `current height: ${height}, show: ${show}, nts: ${numItemsToShow}`
+  );
+  const maxHeight = "800";
 
   useEffect(() => {
     const isTooLarge = height > maxHeight;
-    if (isTooLarge) {
-      if (!show) setShow(true);
-    } else {
-      if (itemsToShow.length === 0) {
-        setItemsToShow(items.slice(0, 5));
-      }
-      // setItemsToShow(items.slice(0, itemsToShow.length + 1));
+    if (isTooLarge && !show) {
+      // TODO: remove last one?
+      setNumItemsToShow((n) => n - 1);
+      setShow(true);
+    } else if (!show) {
+      setNumItemsToShow((n) => n + 1);
     }
   });
 
@@ -120,6 +78,27 @@ function PaginationWrapper({ items, renderItem }) {
     <HeightWrapper setHeight={setHeight} show={show}>
       {itemsToShow.map((item, index) => renderItem(item, index))}
     </HeightWrapper>
+  );
+}
+
+function HeightWrapper({ children, show, setHeight }) {
+  const measureRef = useRef();
+
+  useLayoutEffect(() => {
+    if (measureRef.current) {
+      setHeight(measureRef.current.getBoundingClientRect().height);
+    }
+  });
+
+  return (
+    <div
+      css={`
+        // ${!show && "visibility: hidden;"}
+      `}
+      ref={measureRef}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -155,26 +134,5 @@ function Paragraph({
         </Button>
       ))}
     </div>
-  );
-}
-
-function MeasureExample({ children }) {
-  const [height, setHeight] = useState(0);
-  const measureRef = useRef();
-
-  useLayoutEffect(() => {
-    if (measureRef.current) {
-      setHeight(measureRef.current.getBoundingClientRect().height);
-    }
-  }, []);
-
-  return (
-    <>
-      <div style={{}} ref={measureRef}>
-        {children}
-      </div>
-
-      <h2>The wrapped child is {Math.round(height)}px tall</h2>
-    </>
   );
 }

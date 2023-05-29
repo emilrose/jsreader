@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import "styled-components/macro";
 
@@ -60,5 +60,26 @@ export function ActionButton(props) {
       {...props}
       onClick={wrappedOnClick}
     />
+  );
+}
+
+function MeasureExample({ children }) {
+  const [height, setHeight] = useState(0);
+  const measureRef = useRef();
+
+  useLayoutEffect(() => {
+    if (measureRef.current) {
+      setHeight(measureRef.current.getBoundingClientRect().height);
+    }
+  }, []);
+
+  return (
+    <>
+      <div style={{}} ref={measureRef}>
+        {children}
+      </div>
+
+      <h2>The wrapped child is {Math.round(height)}px tall</h2>
+    </>
   );
 }
