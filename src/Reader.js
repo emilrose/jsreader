@@ -6,7 +6,10 @@ import { Button } from "./components";
 import SelectedWordPane from "./SelectedWordPane";
 
 export default function Reader({ showPane, saveWord }) {
-  const paragraphs = useMemo(() => TEXT.split("\n"), []);
+  const paragraphs = useMemo(
+    () => TEXT.split("\n").filter((p) => p.trim() !== ""),
+    []
+  );
 
   const [
     [selectedWord, selectedWordIndex, selectedParagraphIndex],
@@ -94,6 +97,8 @@ function HeightWrapper({ children, show, setHeight }) {
     <div
       css={`
         ${!show && "visibility: hidden;"}
+        display: flex;
+        flex-direction: column;
       `}
       ref={measureRef}
     >
