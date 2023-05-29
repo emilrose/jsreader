@@ -6,9 +6,10 @@ import { Button, ActionButton, ExternalLink, Text } from "./components";
 
 /* 
 TODO:
-- multi page view
+- multi page view with routing
 - options for dict url
 - view saved words and definitions
+- export words
 */
 
 const PAGES = {
@@ -35,7 +36,7 @@ function App() {
     setCurrentPage(page);
   }
 
-  // Just default to always showing
+  // Default to always showing
   const [showPane, setShowPane] = useState(true);
 
   function toggleSidePane() {
@@ -55,7 +56,7 @@ function App() {
         flex-direction: column;
       `}
     >
-      <TopBar
+      <NavBar
         selectPage={selectPage}
         toggleSidePane={toggleSidePane}
         currentPage={currentPage}
@@ -82,7 +83,7 @@ function NavButton({ page, selectPage, isSelected }) {
   );
 }
 
-function TopBar({ toggleSidePane, selectPage, currentPage }) {
+function NavBar({ toggleSidePane, selectPage, currentPage }) {
   return (
     <div
       css={`
@@ -238,6 +239,7 @@ function Paragraph({
 
   return (
     <div
+      // TODO: detect when to set direction RTL
       css={`
         direction: rtl;
         margin-bottom: 0.75em;
@@ -272,7 +274,9 @@ function MeasureExample() {
 
   return (
     <>
-      <h1 ref={measuredRef}>asd</h1>
+      <h1 style={{ visibility: "hidden" }} ref={measuredRef}>
+        asd
+      </h1>
       <h2>The above header is {Math.round(height)}px tall</h2>
     </>
   );
@@ -316,7 +320,7 @@ function SelectedWordPane({ selectedWord = "", saveWord }) {
   // So we allow the user to edit the selected word.
   // There are three versions of the word:
   // - selectedWord: the original word as selected in the text
-  // - editedWord: the word after edits by the user
+  // - editedWord: the word after a saved edit by the user
   // - temporaryWord: the intermediate version of the word as it's being edited
   // All three forms are initially the same.
   const [editedWord, setEditedWord] = useState(selectedWord);

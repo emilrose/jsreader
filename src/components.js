@@ -11,6 +11,7 @@ export function ExternalLink({ href, children }) {
 }
 
 export function Text({ textArray }) {
+  // TODO: add measured stuff here
   // const refContainer = useRef(null);
 
   // for (let text of textArray) {
@@ -32,6 +33,7 @@ export function Button(props) {
 }
 
 export function ActionButton(props) {
+  // TODO: improve onclick UI here
   const { showConfirmation, onClick } = props;
 
   const [confirm, setConfirm] = useState(false);

@@ -12,6 +12,7 @@ div {
 }
 
 #root {
+  /* TODO: do I need the height 100vh stuff? */
   display: block;
   height: 100vh;
   overflow: hidden;
