@@ -56,8 +56,10 @@ export default function Reader({ showPane, saveWord }) {
 }
 
 function PaginationWrapper({ items, renderItem }) {
-  const [numItemsToShow, setNumItemsToShow] = useState(0);
-  const itemsToShow = items.slice(0, numItemsToShow);
+  const [startRange, setStartRange] = useState(0);
+  const [endRange, setEndRange] = useState(5);
+
+  const itemsToShow = items.slice(startRange, endRange);
   const [show, setShow] = useState(false);
 
   const [height, setHeight] = useState(0);
@@ -67,15 +69,14 @@ function PaginationWrapper({ items, renderItem }) {
     // console.log(
     //   `current height: ${height}, show: ${show}, nts: ${numItemsToShow}`
     // );
-
     const isTooLarge = height >= maxHeight;
     if (isTooLarge && !show) {
       setShow(true);
-      setNumItemsToShow((n) => n - 1);
+      setEndRange((n) => n - 1);
     } else if (!show) {
-      setNumItemsToShow((n) => n + 1);
+      setEndRange((n) => n + 1);
     }
-  }, [height, show, numItemsToShow]);
+  }, [height, show, startRange, endRange]);
 
   return (
     <HeightWrapper setHeight={setHeight} show={show}>
@@ -91,7 +92,7 @@ function HeightWrapper({ children, show, setHeight }) {
     if (measureRef.current) {
       setHeight(measureRef.current.getBoundingClientRect().height);
     }
-  });
+  }, []);
 
   return (
     <div
