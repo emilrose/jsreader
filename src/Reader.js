@@ -20,12 +20,12 @@ export default function Reader({ showPane, saveWord }) {
     setSelectedWord([word, wordIndex, paragraphIndex]);
   }
 
-  function renderParagraph(paragraph, paragraphIndex) {
+  function ParagraphWrapper({ item, index }) {
     return (
       <Paragraph
-        key={`${paragraph.slice(0, 10)}-${paragraphIndex}`}
-        paragraphText={paragraph}
-        paragraphIndex={paragraphIndex}
+        key={`${item.slice(0, 10)}-${index}`}
+        paragraphText={item}
+        paragraphIndex={index}
         selectWord={selectWord}
         selectedParagraphIndex={selectedParagraphIndex}
         selectedWordIndex={selectedWordIndex}
@@ -46,7 +46,9 @@ export default function Reader({ showPane, saveWord }) {
           flex-wrap: wrap;
         `}
       >
-        <PaginationWrapper items={paragraphs} renderItem={renderParagraph} />
+        <PaginationWrapper items={paragraphs}>
+          {ParagraphWrapper}
+        </PaginationWrapper>
       </div>
       {showPane && (
         <SelectedWordPane selectedWord={selectedWord} saveWord={saveWord} />
@@ -55,7 +57,7 @@ export default function Reader({ showPane, saveWord }) {
   );
 }
 
-function PaginationWrapper({ items, renderItem }) {
+function PaginationWrapper({ items, children }) {
   const [startRange, setStartRange] = useState(0);
   const [endRange, setEndRange] = useState(5);
 
@@ -80,7 +82,7 @@ function PaginationWrapper({ items, renderItem }) {
 
   return (
     <HeightWrapper setHeight={setHeight} show={show}>
-      {itemsToShow.map((item, index) => renderItem(item, index))}
+      {itemsToShow.map((item, index) => children({ item, index }))}
     </HeightWrapper>
   );
 }
@@ -92,7 +94,7 @@ function HeightWrapper({ children, show, setHeight }) {
     if (measureRef.current) {
       setHeight(measureRef.current.getBoundingClientRect().height);
     }
-  }, []);
+  });
 
   return (
     <div
