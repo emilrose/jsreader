@@ -46,7 +46,7 @@ export default function Reader({ showPane, saveWord }) {
           flex-wrap: wrap;
         `}
       >
-        <PaginationWrapper items={paragraphs}>
+        <PaginationWrapper items={paragraphs} maxHeight={500}>
           {ParagraphWrapper}
         </PaginationWrapper>
       </div>
@@ -57,7 +57,7 @@ export default function Reader({ showPane, saveWord }) {
   );
 }
 
-function PaginationWrapper({ items, children }) {
+function PaginationWrapper({ items, maxHeight, children }) {
   const [startRange, setStartRange] = useState(0);
   const [endRange, setEndRange] = useState(5);
 
@@ -65,7 +65,6 @@ function PaginationWrapper({ items, children }) {
   const [show, setShow] = useState(false);
 
   const [height, setHeight] = useState(0);
-  const maxHeight = 500;
 
   useLayoutEffect(() => {
     // console.log(
@@ -78,7 +77,7 @@ function PaginationWrapper({ items, children }) {
     } else if (!show) {
       setEndRange((n) => n + 1);
     }
-  }, [height, show, startRange, endRange]);
+  }, [height, show, startRange, endRange, maxHeight]);
 
   return (
     <HeightWrapper setHeight={setHeight} show={show}>
