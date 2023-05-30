@@ -58,31 +58,48 @@ export default function Reader({ showPane, saveWord }) {
 }
 
 function PaginationWrapper({ items, maxHeight, children }) {
-  const [startRange, setStartRange] = useState(0);
-  const [endRange, setEndRange] = useState(5);
+  const [itemHeight, _setItemHeight] = useState({});
+  function setItemHeight(height, index) {
+    _setItemHeight((ih) => ({ ...ih, [index]: height }));
+  }
 
-  const itemsToShow = items.slice(startRange, endRange);
+  const [[startRange, endRange], setRange] = useState([0, 5]);
   const [show, setShow] = useState(false);
 
-  const [height, setHeight] = useState(0);
+  useEffect(() => {
+    if (show) return;
 
-  useLayoutEffect(() => {
-    // console.log(
-    //   `current height: ${height}, show: ${show}, nts: ${numItemsToShow}`
-    // );
-    const isTooLarge = height >= maxHeight;
-    if (isTooLarge && !show) {
-      setShow(true);
-      setEndRange((n) => n - 1);
-    } else if (!show) {
-      setEndRange((n) => n + 1);
+    let i = startRange;
+    let currentHeight = 0;
+
+    while (i < Object.keys(itemHeight).length) {
+      currentHeight += itemHeight[i];
+      if (currentHeight > maxHeight) {
+        // console.log(`FINAL set range to ${[startRange, i - 1]}`);
+        setRange([startRange, i - 1]);
+        setShow(true);
+        return;
+      }
+      i += 1;
     }
-  }, [height, show, startRange, endRange, maxHeight]);
+
+    setRange([startRange, endRange + 1]);
+  }, [itemHeight, show]);
+
+  const itemsToShow = items.slice(startRange, endRange + 1);
 
   return (
-    <HeightWrapper setHeight={setHeight} show={show}>
-      {itemsToShow.map((item, index) => children({ item, index }))}
-    </HeightWrapper>
+    <>
+      {itemsToShow.map((item, index) => (
+        <HeightWrapper
+          key={index} // TODO: fix
+          setHeight={(h) => setItemHeight(h, index)}
+          show={show}
+        >
+          {children({ item, index })}
+        </HeightWrapper>
+      ))}
+    </>
   );
 }
 
@@ -93,7 +110,7 @@ function HeightWrapper({ children, show, setHeight }) {
     if (measureRef.current) {
       setHeight(measureRef.current.getBoundingClientRect().height);
     }
-  });
+  }, []);
 
   return (
     <div
