@@ -66,6 +66,11 @@ function PaginationWrapper({ items, maxHeight, children }) {
   const [[startRange, endRange], setRange] = useState([0, 5]);
   const [show, setShow] = useState(false);
 
+  function pageForward() {
+    setRange([endRange, endRange + 5]);
+    setShow(false);
+  }
+
   useEffect(() => {
     if (show) return;
 
@@ -75,7 +80,7 @@ function PaginationWrapper({ items, maxHeight, children }) {
     while (i < Object.keys(itemHeight).length) {
       currentHeight += itemHeight[i];
       if (currentHeight > maxHeight) {
-        // console.log(`FINAL set range to ${[startRange, i - 1]}`);
+        console.log(`FINAL set range to ${[startRange, i - 1]}`);
         setRange([startRange, i - 1]);
         setShow(true);
         return;
@@ -90,6 +95,7 @@ function PaginationWrapper({ items, maxHeight, children }) {
 
   return (
     <>
+      <button onClick={pageForward}>page forward</button>
       {itemsToShow.map((item, index) => (
         <HeightWrapper
           key={index} // TODO: fix
