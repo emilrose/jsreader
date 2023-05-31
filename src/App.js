@@ -7,11 +7,21 @@ import Reader from "./Reader";
 import SavedWords from "./SavedWords";
 
 /* 
-TODO:
+TODO features:
 - multi page view with routing
 - options for dict url
 - view saved words and definitions
 - export words
+
+TODO code:
+- convert to TS?
+- convert most CSS prop UI to styled components
+
+TODO overall things to add:
+- handle scroll size
+- calculate maxHeight based on actual space
+- cut long paragraphs off partway (?)
+- mobile UI
 */
 
 function App() {

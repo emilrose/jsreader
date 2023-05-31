@@ -57,54 +57,88 @@ export default function Reader({ showPane, saveWord }) {
   );
 }
 
+/* 
+New approach based on looking at react-virtualized:
+- render a bunch of nodes first based on min height, then unrender them 
+- then once all nodes are rendered, look at heights and remove the overflow ones
+
+- but do I even need this? it's just an optimization
+- i guess worth if i cache heights of the overflow ones? then i can use the heights the next time
+*/
+
 function PaginationWrapper({ items, maxHeight, children }) {
   const [itemHeight, _setItemHeight] = useState({});
   function setItemHeight(height, index) {
     _setItemHeight((ih) => ({ ...ih, [index]: height }));
   }
 
-  const [[startRange, endRange], setRange] = useState([0, 5]);
-  const [show, setShow] = useState(false);
+  const [[startRange, endRange], setRange] = useState([0, 0]);
+  // console.log(`range ${[startRange, endRange]}`);
 
   function pageForward() {
     setRange([endRange, endRange + 5]);
-    setShow(false);
   }
 
   useEffect(() => {
-    if (show) return;
+    let remainingSpace = maxHeight;
+    let index = startRange;
+    while (remainingSpace >= 0) {
+      const minNodeHeight = 20;
 
-    let i = startRange;
-    let currentHeight = 0;
+      remainingSpace -= minNodeHeight;
+      index += 1;
+    }
+    setRange([startRange, index - 1]);
+    // console.log("firstrange:", [startRange, index - 1]);
+  }, [startRange, maxHeight]);
 
-    while (i < Object.keys(itemHeight).length) {
-      currentHeight += itemHeight[i];
-      if (currentHeight > maxHeight) {
-        console.log(`FINAL set range to ${[startRange, i - 1]}`);
-        setRange([startRange, i - 1]);
-        setShow(true);
-        return;
-      }
-      i += 1;
+  useLayoutEffect(() => {
+    if (
+      endRange - startRange === 0 ||
+      Object.keys(itemHeight).length !== endRange - startRange
+    ) {
+      return;
     }
 
-    setRange([startRange, endRange + 1]);
-  }, [itemHeight, show]);
+    let remainingSpace = maxHeight;
+    let index = startRange;
+    while (remainingSpace >= 0) {
+      remainingSpace -= itemHeight[index];
+      index += 1;
+    }
+    let newEndRange = index;
+    if (newEndRange !== endRange) {
+      // console.log(
+      //   `change range ${[startRange, endRange]} to ${[startRange, index - 1]}`
+      // );
 
-  const itemsToShow = items.slice(startRange, endRange + 1);
+      setRange([startRange, index - 1]);
+    }
+  }, [endRange, itemHeight, maxHeight, startRange]);
+
+  const itemsToShow = items.slice(startRange, endRange);
 
   return (
     <>
       <button onClick={pageForward}>page forward</button>
-      {itemsToShow.map((item, index) => (
-        <HeightWrapper
-          key={index} // TODO: fix
-          setHeight={(h) => setItemHeight(h, index)}
-          show={show}
-        >
-          {children({ item, index })}
-        </HeightWrapper>
-      ))}
+      <div
+        css={`
+          display: flex;
+          flex-flow: column wrap;
+          overflow: hidden;
+          height: ${maxHeight}px;
+        `}
+      >
+        {itemsToShow.map((item, index) => (
+          <HeightWrapper
+            key={index} // TODO: fix
+            setHeight={(h) => setItemHeight(h, index)}
+            show={true}
+          >
+            {children({ item, index })}
+          </HeightWrapper>
+        ))}
+      </div>
     </>
   );
 }
