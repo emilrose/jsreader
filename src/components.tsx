@@ -81,24 +81,3 @@ export function ActionButton({
     />
   );
 }
-
-function MeasureExample({ children }: { children: ReactNode }) {
-  const [height, setHeight] = useState(0);
-  const measureRef = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    if (measureRef.current) {
-      setHeight(measureRef.current.getBoundingClientRect().height);
-    }
-  }, []);
-
-  return (
-    <>
-      <div style={{}} ref={measureRef}>
-        {children}
-      </div>
-
-      <h2>The wrapped child is {Math.round(height)}px tall</h2>
-    </>
-  );
-}
