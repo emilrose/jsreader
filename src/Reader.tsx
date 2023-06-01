@@ -47,13 +47,7 @@ export default function Reader({
         gap: 10px;
       `}
     >
-      <div
-        css={`
-          flex: 1 1 0;
-          flex-wrap: wrap;
-        `}
-      >
-        {/* <button onClick={pageForward}>page forward</button> */}
+      <div>
         <PaginationWrapper items={paragraphs} maxHeight={500}>
           {ParagraphWrapper}
         </PaginationWrapper>

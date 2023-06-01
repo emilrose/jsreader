@@ -69,25 +69,29 @@ export default function PaginationWrapper({
   const itemsToShow = items.slice(startRange, endRange);
 
   return (
-    <div
-      css={`
-        display: flex;
-        flex-flow: column wrap;
-        overflow: hidden;
-        height: ${maxHeight}px;
-        width: 100%;
-      `}
-    >
-      {itemsToShow.map((item, index) => (
-        <HeightWrapper
-          key={index} // TODO: fix
-          setHeight={(h: number) => setItemHeight(h, index)}
-          show={true}
-        >
-          {children({ item, index })}
-        </HeightWrapper>
-      ))}
-    </div>
+    <>
+      {" "}
+      <button onClick={pageForward}>page forward</button>
+      <div
+        css={`
+          display: flex;
+          flex-flow: column wrap;
+          overflow: hidden;
+          height: ${maxHeight}px;
+          width: 100%;
+        `}
+      >
+        {itemsToShow.map((item, index) => (
+          <HeightWrapper
+            key={index} // TODO: fix
+            setHeight={(h: number) => setItemHeight(h, index)}
+            show={true}
+          >
+            {children({ item, index })}
+          </HeightWrapper>
+        ))}
+      </div>
+    </>
   );
 }
 
