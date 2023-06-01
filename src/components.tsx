@@ -84,7 +84,7 @@ export function ActionButton({
 
 function MeasureExample({ children }: { children: ReactNode }) {
   const [height, setHeight] = useState(0);
-  const measureRef = useRef();
+  const measureRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (measureRef.current) {

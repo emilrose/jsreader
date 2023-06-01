@@ -15,7 +15,6 @@ TODO features:
 - export words
 
 TODO code:
-- convert to TS?
 - convert most CSS prop UI to styled components
 
 TODO overall things to add:

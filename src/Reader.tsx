@@ -5,8 +5,6 @@ import {
   useLayoutEffect,
   useRef,
   ReactNode,
-  ReactComponentElement,
-  Component,
 } from "react";
 import "styled-components/macro";
 
@@ -14,6 +12,9 @@ import { TEXT } from "./constants";
 import { Button } from "./components";
 import SelectedWordPane from "./SelectedWordPane";
 
+interface ParagraphWrapperComponent {
+  ({ item, index }: { item: string; index: number }): JSX.Element;
+}
 export default function Reader({
   showPane,
   saveWord,
@@ -35,7 +36,7 @@ export default function Reader({
     setSelectedWord([word, wordIndex, paragraphIndex]);
   }
 
-  function ParagraphWrapper({ item, index }: { item: string; index: number }) {
+  const ParagraphWrapper: ParagraphWrapperComponent = ({ item, index }) => {
     return (
       <Paragraph
         key={`${item.slice(0, 10)}-${index}`}
@@ -46,7 +47,7 @@ export default function Reader({
         selectedWordIndex={selectedWordIndex}
       />
     );
-  }
+  };
 
   return (
     <div
@@ -88,7 +89,7 @@ function PaginationWrapper({
 }: {
   items: string[];
   maxHeight: number;
-  children: Component;
+  children: ParagraphWrapperComponent;
 }) {
   const [itemHeight, _setItemHeight] = useState<{ [key: string]: number }>({});
   function setItemHeight(height: number, index: number) {
@@ -175,13 +176,14 @@ function HeightWrapper({
   show: boolean;
   setHeight: (height: number) => void;
 }) {
-  const measureRef = useRef();
+  const measureRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (measureRef.current) {
       setHeight(measureRef.current.getBoundingClientRect().height);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // setHeight identity doesn't matter and it's awkward to make its identity consistent
 
   return (
     <div
@@ -204,11 +206,11 @@ function Paragraph({
   selectedWordIndex,
   selectedParagraphIndex,
 }: {
-  paragraphText: string,
-  paragraphIndex: number,
-  selectWord: (word: string, index: number, paragraphIndex: number),
-  selectedWordIndex: number,
-  selectedParagraphIndex: number,
+  paragraphText: string;
+  paragraphIndex: number;
+  selectWord: (word: string, index: number, paragraphIndex: number) => void;
+  selectedWordIndex: number;
+  selectedParagraphIndex: number;
 }) {
   const words = paragraphText.split(" ");
 
