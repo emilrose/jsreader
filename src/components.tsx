@@ -1,8 +1,20 @@
-import { useState, useLayoutEffect, useRef } from "react";
+import {
+  useState,
+  useLayoutEffect,
+  useRef,
+  ReactNode,
+  ComponentPropsWithoutRef,
+} from "react";
 import styled from "styled-components";
 import "styled-components/macro";
 
-export function ExternalLink({ href, children }) {
+export function ExternalLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
   return (
     <a target="_blank" rel="noreferrer" href={href}>
       {children}
@@ -10,7 +22,7 @@ export function ExternalLink({ href, children }) {
   );
 }
 
-export function Text({ textArray }) {
+export function Text({ textArray }: { textArray: string }) {
   // TODO: add measured stuff here
   // const refContainer = useRef(null);
 
@@ -28,13 +40,20 @@ const StyledButton = styled.div`
   }
 `;
 
-export function Button(props) {
+export function Button(props: ComponentPropsWithoutRef<"div">) {
   return <StyledButton role="button" {...props} />;
 }
 
-export function ActionButton(props) {
+interface ActionButtonProps extends ComponentPropsWithoutRef<"input"> {
+  showConfirmation?: boolean;
+}
+
+export function ActionButton({
+  showConfirmation,
+  onClick,
+  ...rest
+}: ActionButtonProps) {
   // TODO: improve onclick UI here
-  const { showConfirmation, onClick } = props;
 
   const [confirm, setConfirm] = useState(false);
 
@@ -57,13 +76,13 @@ export function ActionButton(props) {
         padding: 0 5px;
         ${confirm && "background-color: lightgreen;"}
       `}
-      {...props}
+      {...rest}
       onClick={wrappedOnClick}
     />
   );
 }
 
-function MeasureExample({ children }) {
+function MeasureExample({ children }: { children: ReactNode }) {
   const [height, setHeight] = useState(0);
   const measureRef = useRef();
 

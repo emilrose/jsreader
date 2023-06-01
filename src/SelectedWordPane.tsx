@@ -3,19 +3,25 @@ import "styled-components/macro";
 
 import { ActionButton, ExternalLink } from "./components";
 
-function dictUrl(query) {
+function dictUrl(query: string) {
   return `https://dsal.uchicago.edu/cgi-bin/app/hayyim_query.py?qs=${query}&matchtype=exact&searchhws=yes`;
 }
 
-function steingass(query) {
+function steingass(query: string) {
   return `https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?qs=${query}&matchtype=exact&searchhws=yes`;
 }
 
-function forvoUrl(selectedWord) {
-  return `https://forvo.com/search/${selectedWord}/fa/`;
+function forvoUrl(query: string) {
+  return `https://forvo.com/search/${query}/fa/`;
 }
 
-export default function SelectedWordPane({ selectedWord = "", saveWord }) {
+export default function SelectedWordPane({
+  selectedWord = "",
+  saveWord,
+}: {
+  selectedWord: string;
+  saveWord: (word: string) => void;
+}) {
   // The selected word in the text might not be the same as the lexical form that we should use for dictionary definitions and saving.
   // For example, there might be grammatical suffixes on the word.
   // So we allow the user to edit the selected word.

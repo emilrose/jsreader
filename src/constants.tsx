@@ -1,7 +1,7 @@
-export const PAGES = {
-  library: "Library",
-  words: "Words",
-};
+export enum Page {
+  library = "Library",
+  words = "Words",
+}
 
 export const TEXT = `من یک روز گرم تابستان؛ دقیقاً یک سیزده مرداده حدود ساعت سه و ربع کم بعد از ظهر عاشق شدم.
 تلخها و زهر هجری که چشیدم بارها مرا به این فکر انداخت که اگر یک دوازدهم يا یک چهاردهم مرداد بود

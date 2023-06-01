@@ -1,7 +1,8 @@
 import { useState } from "react";
 import "styled-components/macro";
+import type {} from "styled-components/cssprop";
 
-import { PAGES } from "./constants";
+import { Page } from "./constants";
 import NavBar from "./NavBar";
 import Reader from "./Reader";
 import SavedWords from "./SavedWords";
@@ -25,9 +26,9 @@ TODO overall things to add:
 */
 
 function App() {
-  const [currentPage, setCurrentPage] = useState(PAGES.library);
+  const [currentPage, setCurrentPage] = useState(Page.library);
 
-  function selectPage(page) {
+  function selectPage(page: Page) {
     setCurrentPage(page);
   }
 
@@ -38,9 +39,9 @@ function App() {
     setShowPane((showPane) => !showPane);
   }
 
-  const [savedWords, setSavedWords] = useState([]);
+  const [savedWords, setSavedWords] = useState<string[]>([]);
 
-  function saveWord(newWord) {
+  function saveWord(newWord: string) {
     setSavedWords((words) => [...words, newWord]);
   }
 
@@ -56,10 +57,10 @@ function App() {
         toggleSidePane={toggleSidePane}
         currentPage={currentPage}
       />
-      {currentPage === PAGES.library && (
+      {currentPage === Page.library && (
         <Reader showPane={showPane} saveWord={saveWord} />
       )}
-      {currentPage === PAGES.words && <SavedWords savedWords={savedWords} />}
+      {currentPage === Page.words && <SavedWords savedWords={savedWords} />}
     </div>
   );
 }

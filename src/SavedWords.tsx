@@ -1,6 +1,6 @@
 import "styled-components/macro";
 
-export default function SavedWords({ savedWords }) {
+export default function SavedWords({ savedWords }: { savedWords: string[] }) {
   return (
     <div
       css={`

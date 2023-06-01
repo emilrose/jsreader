@@ -1,9 +1,17 @@
 import "styled-components/macro";
 
 import { Button } from "./components";
-import { PAGES } from "./constants";
+import { Page } from "./constants";
 
-function NavButton({ page, selectPage, isSelected }) {
+function NavButton({
+  page,
+  selectPage,
+  isSelected,
+}: {
+  page: Page;
+  selectPage: (page: Page) => void;
+  isSelected: boolean;
+}) {
   return (
     <Button
       css={`
@@ -17,7 +25,15 @@ function NavButton({ page, selectPage, isSelected }) {
   );
 }
 
-export default function NavBar({ toggleSidePane, selectPage, currentPage }) {
+export default function NavBar({
+  toggleSidePane,
+  selectPage,
+  currentPage,
+}: {
+  toggleSidePane: () => void;
+  selectPage: (page: Page) => void;
+  currentPage: Page;
+}) {
   return (
     <div
       css={`
@@ -35,17 +51,17 @@ export default function NavBar({ toggleSidePane, selectPage, currentPage }) {
         `}
       >
         <NavButton
-          page={PAGES.library}
-          isSelected={currentPage === PAGES.library}
+          page={Page.library}
+          isSelected={currentPage === Page.library}
           selectPage={selectPage}
         />
         <NavButton
-          page={PAGES.words}
-          isSelected={currentPage === PAGES.words}
+          page={Page.words}
+          isSelected={currentPage === Page.words}
           selectPage={selectPage}
         />
       </div>
-      {currentPage === PAGES.library && (
+      {currentPage === Page.library && (
         <Button onClick={toggleSidePane}>Toggle side pane</Button>
       )}
     </div>

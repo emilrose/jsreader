@@ -1,11 +1,26 @@
-import { useEffect, useState, useMemo, useLayoutEffect, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useLayoutEffect,
+  useRef,
+  ReactNode,
+  ReactComponentElement,
+  Component,
+} from "react";
 import "styled-components/macro";
 
 import { TEXT } from "./constants";
 import { Button } from "./components";
 import SelectedWordPane from "./SelectedWordPane";
 
-export default function Reader({ showPane, saveWord }) {
+export default function Reader({
+  showPane,
+  saveWord,
+}: {
+  showPane: boolean;
+  saveWord: (word: string) => void;
+}) {
   const paragraphs = useMemo(
     () => TEXT.split("\n").filter((p) => p.trim() !== ""),
     []
@@ -16,11 +31,11 @@ export default function Reader({ showPane, saveWord }) {
     setSelectedWord,
   ] = useState(["", -1, -1]);
 
-  function selectWord(word, wordIndex, paragraphIndex) {
+  function selectWord(word: string, wordIndex: number, paragraphIndex: number) {
     setSelectedWord([word, wordIndex, paragraphIndex]);
   }
 
-  function ParagraphWrapper({ item, index }) {
+  function ParagraphWrapper({ item, index }: { item: string; index: number }) {
     return (
       <Paragraph
         key={`${item.slice(0, 10)}-${index}`}
@@ -66,9 +81,17 @@ New approach based on looking at react-virtualized:
 - i guess worth if i cache heights of the overflow ones? then i can use the heights the next time
 */
 
-function PaginationWrapper({ items, maxHeight, children }) {
-  const [itemHeight, _setItemHeight] = useState({});
-  function setItemHeight(height, index) {
+function PaginationWrapper({
+  items,
+  maxHeight,
+  children,
+}: {
+  items: string[];
+  maxHeight: number;
+  children: Component;
+}) {
+  const [itemHeight, _setItemHeight] = useState<{ [key: string]: number }>({});
+  function setItemHeight(height: number, index: number) {
     _setItemHeight((ih) => ({ ...ih, [index]: height }));
   }
 
@@ -132,7 +155,7 @@ function PaginationWrapper({ items, maxHeight, children }) {
         {itemsToShow.map((item, index) => (
           <HeightWrapper
             key={index} // TODO: fix
-            setHeight={(h) => setItemHeight(h, index)}
+            setHeight={(h: number) => setItemHeight(h, index)}
             show={true}
           >
             {children({ item, index })}
@@ -143,7 +166,15 @@ function PaginationWrapper({ items, maxHeight, children }) {
   );
 }
 
-function HeightWrapper({ children, show, setHeight }) {
+function HeightWrapper({
+  children,
+  show,
+  setHeight,
+}: {
+  children: ReactNode;
+  show: boolean;
+  setHeight: (height: number) => void;
+}) {
   const measureRef = useRef();
 
   useLayoutEffect(() => {
@@ -172,6 +203,12 @@ function Paragraph({
   selectWord,
   selectedWordIndex,
   selectedParagraphIndex,
+}: {
+  paragraphText: string,
+  paragraphIndex: number,
+  selectWord: (word: string, index: number, paragraphIndex: number),
+  selectedWordIndex: number,
+  selectedParagraphIndex: number,
 }) {
   const words = paragraphText.split(" ");
 
