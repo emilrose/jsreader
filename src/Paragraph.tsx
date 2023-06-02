@@ -1,6 +1,7 @@
 import "styled-components/macro";
 
 import { Button } from "./components";
+import { punctuationRegex } from "./constants";
 
 export interface ParagraphWrapperComponent {
   ({ item, index }: { item: string; index: number }): JSX.Element;
@@ -31,19 +32,46 @@ export default function Paragraph({
       `}
     >
       {words.map((word, i) => (
-        <Button
-          onClick={() => selectWord(word, i, paragraphIndex)}
-          css={`
-            margin: 1px 5px;
-            ${selectedWordIndex === i &&
-            selectedParagraphIndex === paragraphIndex &&
-            "background-color: red !important; "}
-          `}
+        <Word
+          word={word}
+          selected={
+            selectedWordIndex === i && selectedParagraphIndex === paragraphIndex
+          }
+          selectWord={(w) => selectWord(w, i, paragraphIndex)}
           key={`${word}-${i}`}
-        >
-          {word}
-        </Button>
+        />
       ))}
     </div>
+  );
+}
+
+function Word({
+  word,
+  selectWord,
+  selected,
+}: {
+  word: string;
+  selectWord: (word: string) => void;
+  selected: boolean;
+}) {
+  const punctuationAfterWord = word.match(punctuationRegex)?.join(",");
+  const cleanedUpWord = word.replace(punctuationRegex, "");
+
+  return (
+    <span
+      css={`
+        margin: 1px 5px;
+      `}
+    >
+      <Button
+        onClick={() => selectWord(cleanedUpWord)}
+        css={`
+          ${selected && "background-color: red !important; "}
+        `}
+      >
+        {cleanedUpWord}
+      </Button>
+      <span>{punctuationAfterWord}</span>
+    </span>
   );
 }

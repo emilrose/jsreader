@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "styled-components/macro";
 
 import { ActionButton, ExternalLink } from "./components";
+import { punctuationRegex } from "./constants";
 
 function dictUrl(query: string) {
   return `https://dsal.uchicago.edu/cgi-bin/app/hayyim_query.py?qs=${query}&matchtype=exact&searchhws=yes`;

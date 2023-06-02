@@ -34,7 +34,7 @@ export default function PaginationWrapper({
     calculateParagraphsToShow(maxHeight),
     AnchorIndex.start,
   ]);
-  console.log(`range ${[startIndex, endIndex, anchorIndex]}`);
+  // console.log(`range ${[startIndex, endIndex, anchorIndex]}`);
 
   function pageForward() {
     setRange(([_, endIndex]) => [
