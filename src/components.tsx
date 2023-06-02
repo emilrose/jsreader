@@ -22,17 +22,6 @@ export function ExternalLink({
   );
 }
 
-export function Text({ textArray }: { textArray: string }) {
-  // TODO: add measured stuff here
-  // const refContainer = useRef(null);
-
-  // for (let text of textArray) {
-  //   const element = <span ref={refContainer}>{text}</span>;
-  //   console.log(refContainer.current.clientHeight);
-  // }
-  return <></>;
-}
-
 const StyledButton = styled.div`
   :hover {
     cursor: pointer;

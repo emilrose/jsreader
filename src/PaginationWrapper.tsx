@@ -5,12 +5,17 @@ import { ParagraphWrapperComponent } from "./Paragraph";
 
 /* 
 New approach based on looking at react-virtualized:
-- render a bunch of nodes first based on min height, then unrender them 
+- render a bunch of nodes first based on min height, then unrender the unnecessary ones 
 - then once all nodes are rendered, look at heights and remove the overflow ones
 
 - but do I even need this? it's just an optimization
 - i guess worth if i cache heights of the overflow ones? then i can use the heights the next time
 */
+
+function calculateParagraphsToShow(maxHeight: number) {
+  const minNodeHeight = 20;
+  return Math.ceil(maxHeight / minNodeHeight);
+}
 
 export default function PaginationWrapper({
   items,
@@ -26,45 +31,37 @@ export default function PaginationWrapper({
     _setItemHeight((ih) => ({ ...ih, [index]: height }));
   }
 
-  const [[startRange, endRange], setRange] = useState([0, 0]);
+  const [[startRange, endRange], setRange] = useState(() => [
+    0,
+    calculateParagraphsToShow(maxHeight),
+  ]);
   //   console.log(`range ${[startRange, endRange]}`);
 
   function pageForward() {
-    setRange(([_, endRange]) => [endRange, endRange]);
+    setRange(([_, endRange]) => [
+      endRange,
+      endRange + calculateParagraphsToShow(maxHeight),
+    ]);
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (
+      endRange - startRange === 0 ||
+      Object.keys(itemHeight).length !== endRange - startRange
+    ) {
+      return;
+    }
     let remainingSpace = maxHeight;
     let index = startRange;
     while (remainingSpace >= 0) {
-      const minNodeHeight = 20;
-
-      remainingSpace -= minNodeHeight;
+      remainingSpace -= itemHeight[index];
       index += 1;
     }
-    setRange([startRange, index - 1]);
-    // console.log("firstrange:", [startRange, index - 1]);
-  }, [startRange, maxHeight]);
-
-  //   useLayoutEffect(() => {
-  //     if (
-  //       endRange - startRange === 0 ||
-  //       Object.keys(itemHeight).length !== endRange - startRange
-  //     ) {
-  //       return;
-  //     }
-
-  //     let remainingSpace = maxHeight;
-  //     let index = startRange;
-  //     while (remainingSpace >= 0) {
-  //       remainingSpace -= itemHeight[index];
-  //       index += 1;
-  //     }
-  //     let newEndRange = index;
-  //     if (newEndRange !== endRange) {
-  //       setRange([startRange, index - 1]);
-  //     }
-  //   }, [endRange, itemHeight, maxHeight, startRange]);
+    let newEndRange = index;
+    if (newEndRange !== endRange) {
+      setRange([startRange, index - 1]);
+    }
+  }, [endRange, itemHeight, maxHeight, startRange]);
 
   const itemsToShow = items.slice(startRange, endRange);
 
@@ -75,8 +72,7 @@ export default function PaginationWrapper({
       <div
         css={`
           display: flex;
-          flex-flow: column wrap;
-          overflow: hidden;
+          flex-flow: column;
           height: ${maxHeight}px;
           width: 100%;
         `}
