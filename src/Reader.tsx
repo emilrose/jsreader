@@ -54,10 +54,12 @@ export default function Reader({
       `}
     >
       <div
+        // TODO: detect RTL
         css={`
           display: flex;
           flex-direction: column;
           flex-basis: 80%;
+          direction: rtl;
         `}
       >
         <PaginationWrapper

@@ -1,6 +1,7 @@
 import { useState, useLayoutEffect, useRef, ReactNode } from "react";
 import "styled-components/macro";
 
+import { ActionButton, Button } from "./components";
 import { ParagraphWrapperComponent } from "./Paragraph";
 
 function calculateParagraphsToShow(maxHeight: number) {
@@ -103,14 +104,6 @@ export default function PaginationWrapper({
 
   return (
     <>
-      <div>
-        <button disabled={!nextPageExists} onClick={pageForward}>
-          next page
-        </button>
-        <button disabled={!prevPageExists} onClick={pageBackward}>
-          previous page
-        </button>
-      </div>
       <div
         css={`
           display: flex;
@@ -129,6 +122,20 @@ export default function PaginationWrapper({
             {children({ item, index })}
           </HeightWrapper>
         ))}
+      </div>
+      <div
+        css={`
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+        `}
+      >
+        <ActionButton disabled={!prevPageExists} onClick={pageBackward}>
+          &lt; Previous page
+        </ActionButton>
+        <ActionButton disabled={!nextPageExists} onClick={pageForward}>
+          Next page &gt;
+        </ActionButton>
       </div>
     </>
   );

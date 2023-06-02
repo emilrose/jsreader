@@ -1,10 +1,4 @@
-import {
-  useState,
-  useLayoutEffect,
-  useRef,
-  ReactNode,
-  ComponentPropsWithoutRef,
-} from "react";
+import { useState, ReactNode, ComponentPropsWithoutRef } from "react";
 import styled from "styled-components";
 import "styled-components/macro";
 
@@ -29,8 +23,17 @@ const StyledButton = styled.div`
   }
 `;
 
-export function Button(props: ComponentPropsWithoutRef<"div">) {
-  return <StyledButton role="button" {...props} />;
+interface ButtonProps extends ComponentPropsWithoutRef<"div"> {
+  disabled?: boolean;
+}
+export function Button({ disabled, onClick, ...rest }: ButtonProps) {
+  return (
+    <StyledButton
+      role="button"
+      onClick={disabled ? () => {} : onClick}
+      {...rest}
+    />
+  );
 }
 
 interface ActionButtonProps extends ComponentPropsWithoutRef<"input"> {

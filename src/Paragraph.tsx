@@ -24,9 +24,7 @@ export default function Paragraph({
 
   return (
     <div
-      // TODO: detect when to set direction RTL
       css={`
-        direction: rtl;
         margin-bottom: 0.75em;
         width: 100%;
       `}
@@ -60,13 +58,17 @@ function Word({
   return (
     <span
       css={`
-        margin: 1px 5px;
+        margin: 0.05rem 0.1rem;
       `}
     >
       <Button
         onClick={() => selectWord(cleanedUpWord)}
         css={`
-          ${selected && "background-color: red !important; "}
+          border: 0.1em solid white;
+          border-radius: 0.5em;
+          padding: 0.1em;
+          ${selected &&
+          "border: 1px solid hsla(14, 56%, 30%, 1); background-color: hsla(14, 56%, 95%, 1);"}
         `}
       >
         {cleanedUpWord}
