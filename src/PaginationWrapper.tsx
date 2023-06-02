@@ -35,7 +35,7 @@ export default function PaginationWrapper({
     0,
     calculateParagraphsToShow(maxHeight),
   ]);
-  //   console.log(`range ${[startRange, endRange]}`);
+  // console.log(`range ${[startRange, endRange]}`);
 
   function pageForward() {
     setRange(([_, endRange]) => [
@@ -47,7 +47,7 @@ export default function PaginationWrapper({
   useLayoutEffect(() => {
     if (
       endRange - startRange === 0 ||
-      Object.keys(itemHeight).length !== endRange - startRange
+      Object.keys(itemHeight).length - 1 !== endRange - startRange
     ) {
       return;
     }
@@ -55,15 +55,14 @@ export default function PaginationWrapper({
     let index = startRange;
     while (remainingSpace >= 0) {
       remainingSpace -= itemHeight[index];
+      // console.log(index, remainingSpace, itemHeight[index]);
       index += 1;
     }
-    let newEndRange = index;
-    if (newEndRange !== endRange) {
-      setRange([startRange, index - 1]);
-    }
+    index -= 2; // Adjust for going two indexes too far
+    setRange([startRange, index]);
   }, [endRange, itemHeight, maxHeight, startRange]);
 
-  const itemsToShow = items.slice(startRange, endRange);
+  const itemsToShow = items.slice(startRange, endRange + 1);
 
   return (
     <>
@@ -80,9 +79,10 @@ export default function PaginationWrapper({
         {itemsToShow.map((item, index) => (
           <HeightWrapper
             key={index} // TODO: fix
-            setHeight={(h: number) => setItemHeight(h, index)}
+            setHeight={(h: number) => setItemHeight(h, index + startRange)}
             show={true}
           >
+            {/* {console.log("rendering", index + startRange) as unknown as "4"} */}
             {children({ item, index })}
           </HeightWrapper>
         ))}
