@@ -27,10 +27,10 @@ export default function PaginationWrapper({
   }
 
   const [[startRange, endRange], setRange] = useState([0, 0]);
-  // console.log(`range ${[startRange, endRange]}`);
+  //   console.log(`range ${[startRange, endRange]}`);
 
   function pageForward() {
-    setRange([endRange, endRange + 5]);
+    setRange(([_, endRange]) => [endRange, endRange]);
   }
 
   useEffect(() => {
