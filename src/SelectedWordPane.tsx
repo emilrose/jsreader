@@ -48,6 +48,7 @@ export default function SelectedWordPane({
       css={`
         display: flex;
         flex-direction: column;
+        flex-basis: 20%;
       `}
     >
       {!selectedWord && <div>Click a word to select it</div>}

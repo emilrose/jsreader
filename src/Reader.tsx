@@ -53,7 +53,13 @@ export default function Reader({
         gap: 10px;
       `}
     >
-      <div>
+      <div
+        css={`
+          display: flex;
+          flex-direction: column;
+          flex-basis: 80%;
+        `}
+      >
         <PaginationWrapper
           items={paragraphs}
           maxHeight={500}
