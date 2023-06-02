@@ -3,18 +3,14 @@ import "styled-components/macro";
 
 import { ParagraphWrapperComponent } from "./Paragraph";
 
-/* 
-New approach based on looking at react-virtualized:
-- render a bunch of nodes first based on min height, then unrender the unnecessary ones 
-- then once all nodes are rendered, look at heights and remove the overflow ones
-
-- but do I even need this? it's just an optimization
-- i guess worth if i cache heights of the overflow ones? then i can use the heights the next time
-*/
-
 function calculateParagraphsToShow(maxHeight: number) {
   const minNodeHeight = 20;
   return Math.ceil(maxHeight / minNodeHeight);
+}
+
+enum AnchorIndex {
+  start = "start",
+  end = "end",
 }
 
 export default function PaginationWrapper({
@@ -31,54 +27,85 @@ export default function PaginationWrapper({
     _setItemHeight((ih) => ({ ...ih, [index]: height }));
   }
 
-  const [[startIndex, endIndex], setRange] = useState(() => [
+  const [[startIndex, endIndex, anchorIndex], setRange] = useState(() => [
     0,
     calculateParagraphsToShow(maxHeight),
+    AnchorIndex.start,
   ]);
-  console.log(`range ${[startIndex, endIndex]}`);
+  console.log(`range ${[startIndex, endIndex, anchorIndex]}`);
 
   function pageForward() {
-    setRange(([_, endRange]) => [
-      endRange,
-      endRange + calculateParagraphsToShow(maxHeight),
+    setRange(([_, endIndex]) => [
+      endIndex,
+      Math.min(
+        endIndex + calculateParagraphsToShow(maxHeight),
+        items.length - 1
+      ),
+      AnchorIndex.start,
     ]);
   }
   function pageBackward() {
-    // setRange(([_, endRange]) => [
-    //   endRange,
-    //   endRange + calculateParagraphsToShow(maxHeight),
-    // ]);
+    setRange(([_, endIndex]) => [
+      Math.max(endIndex - calculateParagraphsToShow(maxHeight), 0),
+      startIndex,
+      AnchorIndex.end,
+    ]);
   }
 
   useLayoutEffect(() => {
-    if (endIndex - startIndex === 0 || itemHeight[endIndex] !== undefined) {
+    // TODO: can avoid running this as much
+    const calculatedAllNodesInRange = itemHeight[endIndex] !== undefined;
+    if (!calculatedAllNodesInRange) {
       return;
     }
-    let remainingSpace = maxHeight;
-    let index = startIndex;
-    while (remainingSpace >= 0) {
-      remainingSpace -= itemHeight[index];
-      // console.log(index, remainingSpace, itemHeight[index]);
-      index += 1;
+
+    let index,
+      newStartIndex = startIndex,
+      newEndIndex = endIndex,
+      remainingSpace = maxHeight;
+    switch (anchorIndex) {
+      case AnchorIndex.start:
+        index = startIndex;
+        while (remainingSpace >= 0) {
+          remainingSpace -= itemHeight[index];
+          // console.log(index, remainingSpace, itemHeight[index]);
+          index += 1;
+        }
+        index -= 2; // Adjust for going two indexes too far
+        newEndIndex = index;
+        break;
+      case AnchorIndex.end:
+        index = endIndex;
+        while (remainingSpace >= 0) {
+          remainingSpace -= itemHeight[index];
+          // console.log(index, remainingSpace, itemHeight[index]);
+          index -= 1;
+        }
+        index += 2; // Adjust for going two indexes too far
+        newStartIndex = index;
+        break;
+      default:
+        const check: never = anchorIndex;
+        return check;
     }
-    index -= 2; // Adjust for going two indexes too far
-    setRange([startIndex, index]);
+
+    setRange([newStartIndex, newEndIndex, anchorIndex]);
   }, [endIndex, itemHeight, maxHeight, startIndex]);
 
   const itemsToShow = items.slice(startIndex, endIndex + 1);
 
-  console.log(endIndex + 1, items.length);
   const nextPageExists = endIndex + 1 !== items.length;
   const prevPageExists = startIndex > 0;
 
   return (
     <>
-      {" "}
       <div>
-        {nextPageExists && <button onClick={pageForward}>next page</button>}
-        {prevPageExists && (
-          <button onClick={pageBackward}>previous page</button>
-        )}
+        <button disabled={!nextPageExists} onClick={pageForward}>
+          next page
+        </button>
+        <button disabled={!prevPageExists} onClick={pageBackward}>
+          previous page
+        </button>
       </div>
       <div
         css={`
@@ -94,7 +121,7 @@ export default function PaginationWrapper({
             setHeight={(h: number) => setItemHeight(h, index + startIndex)}
             show={true}
           >
-            {console.log("rendering", index + startIndex) as unknown as "4"}
+            {/* {console.log("rendering", index + startIndex) as unknown as "4"} */}
             {children({ item, index })}
           </HeightWrapper>
         ))}
