@@ -1,4 +1,4 @@
-import { useEffect, useState, useLayoutEffect, useRef, ReactNode } from "react";
+import { useState, useLayoutEffect, useRef, ReactNode } from "react";
 import "styled-components/macro";
 
 import { ParagraphWrapperComponent } from "./Paragraph";
@@ -31,11 +31,11 @@ export default function PaginationWrapper({
     _setItemHeight((ih) => ({ ...ih, [index]: height }));
   }
 
-  const [[startRange, endRange], setRange] = useState(() => [
+  const [[startIndex, endIndex], setRange] = useState(() => [
     0,
     calculateParagraphsToShow(maxHeight),
   ]);
-  // console.log(`range ${[startRange, endRange]}`);
+  console.log(`range ${[startIndex, endIndex]}`);
 
   function pageForward() {
     setRange(([_, endRange]) => [
@@ -43,31 +43,43 @@ export default function PaginationWrapper({
       endRange + calculateParagraphsToShow(maxHeight),
     ]);
   }
+  function pageBackward() {
+    // setRange(([_, endRange]) => [
+    //   endRange,
+    //   endRange + calculateParagraphsToShow(maxHeight),
+    // ]);
+  }
 
   useLayoutEffect(() => {
-    if (
-      endRange - startRange === 0 ||
-      Object.keys(itemHeight).length - 1 !== endRange - startRange
-    ) {
+    if (endIndex - startIndex === 0 || itemHeight[endIndex] !== undefined) {
       return;
     }
     let remainingSpace = maxHeight;
-    let index = startRange;
+    let index = startIndex;
     while (remainingSpace >= 0) {
       remainingSpace -= itemHeight[index];
       // console.log(index, remainingSpace, itemHeight[index]);
       index += 1;
     }
     index -= 2; // Adjust for going two indexes too far
-    setRange([startRange, index]);
-  }, [endRange, itemHeight, maxHeight, startRange]);
+    setRange([startIndex, index]);
+  }, [endIndex, itemHeight, maxHeight, startIndex]);
 
-  const itemsToShow = items.slice(startRange, endRange + 1);
+  const itemsToShow = items.slice(startIndex, endIndex + 1);
+
+  console.log(endIndex + 1, items.length);
+  const nextPageExists = endIndex + 1 !== items.length;
+  const prevPageExists = startIndex > 0;
 
   return (
     <>
       {" "}
-      <button onClick={pageForward}>page forward</button>
+      <div>
+        {nextPageExists && <button onClick={pageForward}>next page</button>}
+        {prevPageExists && (
+          <button onClick={pageBackward}>previous page</button>
+        )}
+      </div>
       <div
         css={`
           display: flex;
@@ -79,10 +91,10 @@ export default function PaginationWrapper({
         {itemsToShow.map((item, index) => (
           <HeightWrapper
             key={index} // TODO: fix
-            setHeight={(h: number) => setItemHeight(h, index + startRange)}
+            setHeight={(h: number) => setItemHeight(h, index + startIndex)}
             show={true}
           >
-            {/* {console.log("rendering", index + startRange) as unknown as "4"} */}
+            {console.log("rendering", index + startIndex) as unknown as "4"}
             {children({ item, index })}
           </HeightWrapper>
         ))}
