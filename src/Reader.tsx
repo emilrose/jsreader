@@ -6,6 +6,8 @@ import SelectedWordPane from "./SelectedWordPane";
 import PaginationWrapper from "./PaginationWrapper";
 import Paragraph, { ParagraphWrapperComponent } from "./Paragraph";
 
+type WordState = [string, number, number];
+const initialSelectedWordState: WordState = ["", -1, -1];
 export default function Reader({
   showPane,
   saveWord,
@@ -21,10 +23,14 @@ export default function Reader({
   const [
     [selectedWord, selectedWordIndex, selectedParagraphIndex],
     setSelectedWord,
-  ] = useState(["", -1, -1]);
+  ] = useState<WordState>(initialSelectedWordState);
 
   function selectWord(word: string, wordIndex: number, paragraphIndex: number) {
     setSelectedWord([word, wordIndex, paragraphIndex]);
+  }
+
+  function onPagination() {
+    setSelectedWord(initialSelectedWordState);
   }
 
   const ParagraphWrapper: ParagraphWrapperComponent = ({ item, index }) => {
@@ -48,7 +54,11 @@ export default function Reader({
       `}
     >
       <div>
-        <PaginationWrapper items={paragraphs} maxHeight={500}>
+        <PaginationWrapper
+          items={paragraphs}
+          maxHeight={500}
+          onPagination={onPagination}
+        >
           {ParagraphWrapper}
         </PaginationWrapper>
       </div>

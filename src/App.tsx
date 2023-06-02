@@ -18,10 +18,10 @@ TODO code:
 - convert most CSS prop UI to styled components
 
 TODO overall things to add:
-- handle scroll size
+- reflow when size of screen changes
 - calculate maxHeight based on actual space
-- cut long paragraphs off partway (?)
 - mobile UI
+- cut long paragraphs off partway (?)
 */
 
 function App() {

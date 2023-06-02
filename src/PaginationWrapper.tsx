@@ -16,10 +16,12 @@ enum AnchorIndex {
 export default function PaginationWrapper({
   items,
   maxHeight,
+  onPagination,
   children,
 }: {
   items: string[];
   maxHeight: number;
+  onPagination: () => void;
   children: ParagraphWrapperComponent;
 }) {
   const [itemHeight, _setItemHeight] = useState<{ [key: string]: number }>({});
@@ -43,6 +45,7 @@ export default function PaginationWrapper({
       ),
       AnchorIndex.start,
     ]);
+    onPagination();
   }
   function pageBackward() {
     setRange(([_, endIndex]) => [
@@ -50,6 +53,7 @@ export default function PaginationWrapper({
       startIndex,
       AnchorIndex.end,
     ]);
+    onPagination();
   }
 
   useLayoutEffect(() => {
