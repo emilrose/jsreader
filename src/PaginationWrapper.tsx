@@ -1,8 +1,9 @@
 import { useState, useLayoutEffect, useRef, ReactNode } from "react";
 import "styled-components/macro";
 
-import { ActionButton, Button } from "./components";
+import { ActionButton } from "./components";
 import { ParagraphWrapperComponent } from "./Paragraph";
+import { log } from "console";
 
 function calculateParagraphsToShow(maxHeight: number) {
   const minNodeHeight = 20;
@@ -12,6 +13,10 @@ function calculateParagraphsToShow(maxHeight: number) {
 enum AnchorIndex {
   start = "start",
   end = "end",
+}
+
+function range(start: number, end: number) {
+  return Array.from(new Array(end - start), (_, i) => i + start);
 }
 
 export default function PaginationWrapper({
@@ -95,7 +100,7 @@ export default function PaginationWrapper({
     }
 
     setRange([newStartIndex, newEndIndex, anchorIndex]);
-  }, [endIndex, itemHeight, maxHeight, startIndex]);
+  }, [endIndex, itemHeight, maxHeight, startIndex, anchorIndex]);
 
   const itemsToShow = items.slice(startIndex, endIndex + 1);
 
@@ -116,7 +121,6 @@ export default function PaginationWrapper({
           <HeightWrapper
             key={index} // TODO: fix
             setHeight={(h: number) => setItemHeight(h, index + startIndex)}
-            show={true}
           >
             {/* {console.log("rendering", index + startIndex) as unknown as "4"} */}
             {children({ item, index })}
@@ -141,13 +145,12 @@ export default function PaginationWrapper({
   );
 }
 
+// Render a component and callback with height
 function HeightWrapper({
   children,
-  show,
   setHeight,
 }: {
   children: ReactNode;
-  show: boolean;
   setHeight: (height: number) => void;
 }) {
   const measureRef = useRef<HTMLDivElement>(null);
@@ -159,16 +162,6 @@ function HeightWrapper({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // setHeight identity doesn't matter and it's awkward to make its identity consistent
 
-  return (
-    <div
-      css={`
-        ${!show && "visibility: hidden;"}
-        display: flex;
-        flex-direction: column;
-      `}
-      ref={measureRef}
-    >
-      {children}
-    </div>
-  );
+  // TODO: do i need a div here
+  return <div ref={measureRef}>{children}</div>;
 }

@@ -1,7 +1,3 @@
-export enum Page {
-  library = "Library",
-  words = "Words",
-}
 
 export const punctuationRegex = /،$/;
 

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import "styled-components/macro";
 
 import { ActionButton, ExternalLink } from "./components";
-import { punctuationRegex } from "./constants";
 
 function dictUrl(query: string) {
   return `https://dsal.uchicago.edu/cgi-bin/app/hayyim_query.py?qs=${query}&matchtype=exact&searchhws=yes`;
@@ -26,13 +25,7 @@ export default function SelectedWordPane({
   // The selected word in the text might not be the same as the lexical form that we should use for dictionary definitions and saving.
   // For example, there might be grammatical suffixes on the word.
   // So we allow the user to edit the selected word.
-  // There are three versions of the word:
-  // - selectedWord: the original word as selected in the text
-  // - editedWord: the word after a saved edit by the user
-  // - temporaryWord: the intermediate version of the word as it's being edited
-  // All three forms are initially the same.
   const [editedWord, setEditedWord] = useState(selectedWord);
-  const [temporaryWord, setTemporaryWord] = useState(selectedWord);
 
   const dictIframeSrc = dictUrl(editedWord);
   const pronounciationIframeSrc = forvoUrl(editedWord);
@@ -41,7 +34,6 @@ export default function SelectedWordPane({
   useEffect(() => {
     // Reset the local word state to selectedWord whenever a new word is selected.
     setEditedWord(selectedWord);
-    setTemporaryWord(selectedWord);
   }, [selectedWord]);
 
   return (
@@ -50,24 +42,22 @@ export default function SelectedWordPane({
         display: flex;
         flex-direction: column;
         flex-basis: 20%;
+        flex-shrink: 0;
       `}
     >
       {!selectedWord && <div>Click a word to select it</div>}
       {selectedWord && (
         <>
-          <div>Currently selected word: {editedWord}</div>{" "}
+          <div>Currently selected word: {selectedWord}</div>{" "}
           <div>
             <input
               type="text"
-              value={temporaryWord}
-              onChange={(e) => setTemporaryWord(e.target.value)}
+              value={editedWord}
+              onChange={(e) => setEditedWord(e.target.value)}
             />
-            <ActionButton onClick={() => setEditedWord(temporaryWord)}>
-              Confirm edited word
-            </ActionButton>
           </div>
           <div>
-            <ActionButton onClick={() => saveWord(editedWord)} showConfirmation>
+            <ActionButton onClick={() => saveWord(editedWord)}>
               Save word
             </ActionButton>
           </div>

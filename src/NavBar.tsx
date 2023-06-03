@@ -1,7 +1,11 @@
 import "styled-components/macro";
 
 import { Button } from "./components";
-import { Page } from "./constants";
+
+export enum Page {
+  library = "Library",
+  words = "Words",
+}
 
 function NavButton({
   page,
@@ -15,8 +19,9 @@ function NavButton({
   return (
     <Button
       css={`
-        color: white;
         ${isSelected && "text-decoration: underline"}
+        color: black;
+        background-color: white;
       `}
       onClick={() => selectPage(page)}
     >

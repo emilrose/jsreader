@@ -2,8 +2,7 @@ import { useState } from "react";
 import "styled-components/macro";
 import type {} from "styled-components/cssprop";
 
-import { Page } from "./constants";
-import NavBar from "./NavBar";
+import NavBar, { Page } from "./NavBar";
 import Reader from "./Reader";
 import SavedWords from "./SavedWords";
 
@@ -39,8 +38,9 @@ function App() {
   }
 
   const [savedWords, setSavedWords] = useState<string[]>([]);
-
+  console.log(savedWords);
   function saveWord(newWord: string) {
+    console.log(newWord);
     setSavedWords((words) => [...words, newWord]);
   }
 

@@ -50,7 +50,6 @@ export default function Reader({
     <div
       css={`
         display: flex;
-        gap: 10px;
       `}
     >
       <div
@@ -58,8 +57,8 @@ export default function Reader({
         css={`
           display: flex;
           flex-direction: column;
-          flex-basis: 80%;
           direction: rtl;
+          padding: 0 1rem;
         `}
       >
         <PaginationWrapper
