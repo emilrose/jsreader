@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "styled-components/macro";
 import type {} from "styled-components/cssprop";
 
 import NavBar, { Page } from "./NavBar";
 import Reader from "./Reader";
 import SavedWords from "./SavedWords";
+import { log } from "console";
 
 /* 
 TODO features:
@@ -24,6 +25,19 @@ TODO overall things to add:
 */
 
 function App() {
+  // TODO: tmp code to test server
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetch("/hello");
+        const text = await response.text();
+        console.log(text);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
+
   const [currentPage, setCurrentPage] = useState(Page.library);
 
   function selectPage(page: Page) {
@@ -38,7 +52,7 @@ function App() {
   }
 
   const [savedWords, setSavedWords] = useState<string[]>([]);
-  console.log(savedWords);
+  // console.log(savedWords);
   function saveWord(newWord: string) {
     console.log(newWord);
     setSavedWords((words) => [...words, newWord]);
