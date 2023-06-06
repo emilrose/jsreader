@@ -1,24 +1,34 @@
 # JSReader
 
-A tool for reading texts in a foreign language, similar to [Readlang](https://readlang.com/).
+A web tool for reading texts in a foreign language with customizable dictionary assistance and tracking of words that were looked up.
 
 # URL
-emilrose.ca:3000
+
+http://www.emilrose.ca
 
 # Build and copy to remote:
+
+Assumes server with SSH config under `do` and user `root`.
+
 ```
 npm run build
-rsync -av --exclude '.direnv' --exclude '.git' --exclude '__pycache__' ~/repos/jsreader/build root@67.207.81.56:/root
+go build server/main.go
+rsync -av ./build ./main ./server/config do:/root/jsreader
 ```
 
 # Setup server
+
+Run directly on server:
+
 ```
 sudo apt update
-sudo apt install nodejs npm
-npm install -g serve
-```
+sudo apt install -y nodejs npm nginx
 
-# Run on server
-```
-serve -l 3000 build
+cp /root/jsreader/config/server.service /lib/systemd/system/server.service
+sudo service server start
+systemctl daemon-reload
+
+cp /root/jsreader/config/emilrose /etc/nginx/sites-available
+sudo ln -sf /etc/nginx/sites-available/emilrose /etc/nginx/sites-enabled/emilrose
+systemctl restart nginx
 ```
