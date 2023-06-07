@@ -3,7 +3,6 @@ import "styled-components/macro";
 
 import { ActionButton } from "./components";
 import { ParagraphWrapperComponent } from "./Paragraph";
-import { log } from "console";
 
 function calculateParagraphsToShow(maxHeight: number) {
   const minNodeHeight = 20;
@@ -15,9 +14,6 @@ enum AnchorIndex {
   end = "end",
 }
 
-function range(start: number, end: number) {
-  return Array.from(new Array(end - start), (_, i) => i + start);
-}
 
 export default function PaginationWrapper({
   items,

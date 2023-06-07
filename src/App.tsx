@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "styled-components/macro";
 import type {} from "styled-components/cssprop";
 
 import NavBar, { Page } from "./NavBar";
 import Reader from "./Reader";
 import SavedWords from "./SavedWords";
+import { useGetText, APICallStatus } from "./api";
 
 /* 
 TODO features:
@@ -24,18 +25,7 @@ TODO overall things to add:
 */
 
 function App() {
-  // TODO: tmp code to test server
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch("/reader/hello");
-        const text = await response.text();
-        console.log(text);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, []);
+  const [text, textStatus] = useGetText();
 
   const [currentPage, setCurrentPage] = useState(Page.library);
 
@@ -70,7 +60,15 @@ function App() {
         currentPage={currentPage}
       />
       {currentPage === Page.library && (
-        <Reader showPane={showPane} saveWord={saveWord} />
+        <>
+          {textStatus === APICallStatus.loading && <div>Loading text...</div>}
+          {textStatus === APICallStatus.error && (
+            <div>Failed to load text from API.</div>
+          )}
+          {textStatus === APICallStatus.success && (
+            <Reader showPane={showPane} saveWord={saveWord} text={text} />
+          )}
+        </>
       )}
       {currentPage === Page.words && <SavedWords savedWords={savedWords} />}
     </div>

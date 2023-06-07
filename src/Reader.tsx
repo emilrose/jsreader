@@ -1,23 +1,25 @@
 import { useState, useMemo } from "react";
 import "styled-components/macro";
 
-import { TEXT } from "./constants";
 import SelectedWordPane from "./SelectedWordPane";
 import PaginationWrapper from "./PaginationWrapper";
 import Paragraph, { ParagraphWrapperComponent } from "./Paragraph";
+import { Text } from "./api";
 
 type WordState = [string, number, number];
 const initialSelectedWordState: WordState = ["", -1, -1];
 export default function Reader({
   showPane,
   saveWord,
+  text,
 }: {
   showPane: boolean;
   saveWord: (word: string) => void;
+  text: Text;
 }) {
   const paragraphs = useMemo(
-    () => TEXT.split("\n").filter((p) => p.trim() !== ""),
-    []
+    () => text.content.split("\n").filter((p) => p.trim() !== ""),
+    [text.content]
   );
 
   const [
@@ -57,7 +59,6 @@ export default function Reader({
         css={`
           display: flex;
           flex-direction: column;
-          direction: rtl;
           padding: 0 1rem;
         `}
       >

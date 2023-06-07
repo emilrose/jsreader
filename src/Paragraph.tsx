@@ -2,7 +2,7 @@ import "styled-components/macro";
 
 import { Button } from "./components";
 
-const punctuationRegex = /،$/;
+const punctuationRegex = /[،;.,]$/;
 
 export interface ParagraphWrapperComponent {
   ({ item, index }: { item: string; index: number }): JSX.Element;
