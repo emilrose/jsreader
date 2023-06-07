@@ -7,16 +7,20 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Database struct {
+	Path string
+}
+
 type Text struct {
 	Id      int    `json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 }
 
-func GetTexts() ([]Text, error) {
+func (d *Database) GetTexts() ([]Text, error) {
 	texts := []Text{}
 
-	db, err := sql.Open("sqlite3", "./reader.db")
+	db, err := sql.Open("sqlite3", d.Path)
 	if err != nil {
 		log.Printf("Failed to open DB, err: %v", err)
 		return texts, err
