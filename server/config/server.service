@@ -5,7 +5,7 @@ Description=server
 Type=simple
 Restart=always
 RestartSec=5s
-ExecStart=/home/jsreader/main
+ExecStart=/home/jsreader/main /home/reader.db
 
 [Install]
 WantedBy=multi-user.target

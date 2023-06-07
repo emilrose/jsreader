@@ -12,7 +12,7 @@ server {
         try_files $uri $uri/ =404;
     }
 
-    location /reader/hello {
+    location /reader/texts {
         proxy_pass http://localhost:4000;
     }
 }

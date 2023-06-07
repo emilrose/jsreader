@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 type Database struct {
@@ -20,7 +20,7 @@ type Text struct {
 func (d *Database) GetTexts() ([]Text, error) {
 	texts := []Text{}
 
-	db, err := sql.Open("sqlite3", d.Path)
+	db, err := sql.Open("sqlite", d.Path)
 	if err != nil {
 		log.Printf("Failed to open DB, err: %v", err)
 		return texts, err
