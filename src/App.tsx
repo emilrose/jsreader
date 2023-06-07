@@ -5,7 +5,6 @@ import type {} from "styled-components/cssprop";
 import NavBar, { Page } from "./NavBar";
 import Reader from "./Reader";
 import SavedWords from "./SavedWords";
-import { log } from "console";
 
 /* 
 TODO features:

@@ -23,7 +23,7 @@ Run directly on server:
 ```
 # setup dependencies
 sudo apt update
-sudo apt install -y nodejs npm nginx
+sudo apt install -y nodejs npm nginx sqlite3
 
 # setup systemd service
 cp /home/jsreader/config/server.service /lib/systemd/system/server.service
