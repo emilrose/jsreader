@@ -1,10 +1,10 @@
 # JSReader
 
-A web tool for reading texts in a foreign language with customizable dictionary assistance and tracking of words that were looked up.
+A WIP web tool for reading texts in a foreign language with customizable dictionary assistance and tracking of words that were looked up.
 
 # URL
 
-http://www.emilrose.ca
+http://www.emilrose.ca/reader
 
 # Build and copy to remote:
 

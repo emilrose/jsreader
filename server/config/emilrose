@@ -3,12 +3,16 @@ server {
     server_name emilrose.ca www.emilrose.ca;
 
     location / {
-        root /home/jsreader/build;
+        root /home/site;
         try_files $uri $uri/ =404;
     }
 
+    location /reader {
+        alias /home/jsreader/build;
+        try_files $uri $uri/ =404;
+    }
 
-    location /hello {
+    location /reader/hello {
         proxy_pass http://localhost:4000;
     }
 }

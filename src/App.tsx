@@ -29,7 +29,7 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch("/hello");
+        const response = await fetch("/reader/hello");
         const text = await response.text();
         console.log(text);
       } catch (e) {
